@@ -1,9 +1,13 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Row, Col, Tabs, Tab } from 'react-bootstrap'
 import CommanText from '../CommanText/CommanText'
 import { BsCheckCircleFill } from "react-icons/bs";
 import { TextField } from '@mui/material';
 import CustomButton from '../CustomButton/CustomButton';
+import { useMutation } from 'react-query';
+import { showMessage } from 'src/Utils/MessageModal';
+import { loginApi, postRegisterData } from './AllApis';
+import ResetPasswordDialog from './ResetPasswordDialog';
 
 interface DialogProps {
     dialogOpen?: boolean;
@@ -11,6 +15,110 @@ interface DialogProps {
 }
 
 function AuthDialog({ dialogOpen = false, closeDialogFn }: DialogProps) {
+
+    const [loginData, setLoginData] = useState<any>({
+        email: "",
+        password: "",
+    });
+
+    const [registerData, setRegisterData] = useState<any>({
+        name: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
+        phoneNumber: ""
+    });
+
+    const [registerDataError, setRegisterDataError] = useState<any>({
+        name: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
+        phoneNumber: ""
+    });
+
+    const handleInputChange = (e: any) => {
+
+        let temp_loginData = { ...loginData };
+
+        const { value, name } = e.target;
+
+        temp_loginData = {
+            ...loginData,
+            [name]: value,
+        };
+
+        setLoginData(temp_loginData);
+    }
+
+    const loginUser = () => {
+        let loginFormData = new FormData();
+        loginFormData.append("email", loginData.email);
+        loginFormData.append("password", loginData.password);
+
+        loginUserMutate(loginFormData);
+    }
+
+    const { mutate: loginUserMutate, isLoading: loginLoader } = useMutation(loginApi, {
+        onSuccess: (data: any, localData: any) => {
+            localStorage.setItem("authToken", data?.token);
+            localStorage.setItem("user_Id", data?.user?.id);
+            localStorage.setItem("user", JSON.stringify(data?.user));
+
+            closeDialogFn({ status: false, isResetPassword: false })
+            if (data?.message) {
+                showMessage({
+                    msgTyp: "success",
+                    message: data?.message,
+                });
+            }
+
+        }
+    });
+
+    const handleRegisterInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const { value, name } = event.target;
+
+        let temp_registerData = { ...registerData };
+        temp_registerData = {
+            ...registerData,
+            [name]: value,
+        };
+
+        setRegisterData(temp_registerData);
+        // setRegisterDataError(checkIfError(registerData));
+    };
+
+    const registerUser = () => {
+        let registerFormData = new FormData();
+        registerFormData.append("name", registerData.name);
+        registerFormData.append("email", registerData.email);
+        registerFormData.append("mobile", registerData.phoneNumber);
+        registerFormData.append("password", registerData.password);
+
+        registerUserMutate(registerFormData);
+    }
+
+    const { mutate: registerUserMutate, isLoading: registerLoader } = useMutation(
+        postRegisterData,
+        {
+            onSuccess: (data: any, localData: any) => {
+
+                localStorage.setItem("authToken", data?.token);
+                localStorage.setItem("user_Id", data?.user?.id);
+                localStorage.setItem("user", JSON.stringify(data?.user));
+
+                closeDialogFn({ status: false, isResetPassword: false })
+                if (data?.message) {
+                    showMessage({
+                        msgTyp: "success",
+                        message: data?.message,
+                    });
+                }
+            },
+        }
+    );
+
     return (<>
         {(dialogOpen) && <div className="dialogBackdrop">
             <div className="dialogCard">
@@ -67,7 +175,7 @@ function AuthDialog({ dialogOpen = false, closeDialogFn }: DialogProps) {
 
                     <Col xs={8}>
                         <div className="flexEnd px-3 py-2">
-                            <CommanText className="pointer" tag="p" text="Close" onClick={() => closeDialogFn(false)} fontSize={14} fontWeight={400} />
+                            <CommanText className="pointer" tag="p" text="Close" onClick={() => closeDialogFn({ status: false, isResetPassword: true })} fontSize={14} fontWeight={400} />
                         </div>
 
 
@@ -79,12 +187,16 @@ function AuthDialog({ dialogOpen = false, closeDialogFn }: DialogProps) {
                                     <CommanText className="my-3" tag="p" align="center" text="Login to your DremersClub Account" fontSize={16} fontWeight={400} colorType="textGrey" />
 
 
-                                    <TextField id="outlined-basic" className="w-100 my-2" label="Email id" variant="outlined" />
-                                    <TextField id="password-basic" className="w-100 my-2" label="Password" variant="outlined" />
+                                    <TextField id="outlined-basic" name="email" onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                                        handleInputChange(e)
+                                    } className="w-100 my-2" label="Email id" variant="outlined" />
+                                    <TextField id="password-basic" name="password" onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                                        handleInputChange(e)
+                                    } className="w-100 my-2" label="Password" variant="outlined" />
 
-                                    <CustomButton name="Login" className="w-100 my-3" height={56} background_color="primary" />
+                                    <CustomButton name="Login" isLoading={loginLoader} className="w-100 my-3" onClick={loginUser} height={56} background_color="primary" />
 
-                                    <CommanText className="my-y pointer" tag="p" align="center" text="Forgot Password?" fontSize={16} fontWeight={400} colorType="primary" />
+                                    <CommanText className="my-y pointer" tag="p" align="center" onClick={() => { closeDialogFn({ status: false, isResetPassword: true }) }} text="Forgot Password?" fontSize={16} fontWeight={400} colorType="primary" />
                                 </div>
                             </Tab>
 
@@ -93,16 +205,26 @@ function AuthDialog({ dialogOpen = false, closeDialogFn }: DialogProps) {
                                     <CommanText className="my-3" tag="p" align="center" text="Create a Free DremersClub Account" fontSize={16} fontWeight={400} colorType="textGrey" />
 
 
-                                    <TextField id="outlined-basic" className="w-100 my-2" label="Name" variant="outlined" />
-                                    <TextField id="password-basic" className="w-100 my-2" label="Email id" variant="outlined" />
-
+                                    <TextField id="outlined-basic" className="w-100 my-2" label="Name" name="name" variant="outlined" onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                                        handleRegisterInputChange(e)
+                                    } />
+                                    <TextField id="password-basic" className="w-100 my-2" label="Email id" name="email" variant="outlined" onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                                        handleRegisterInputChange(e)
+                                    } />
+                                    <TextField id="password-basic" className="w-100 my-2" label="Phone No." name="phoneNumber" variant="outlined" onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                                        handleRegisterInputChange(e)
+                                    } />
                                     <Row>
-                                        <Col><TextField id="outlined-basic1" className="w-100 my-2" label="Create Password" variant="outlined" /></Col>
-                                        <Col><TextField id="password-basic2" className="w-100 my-2" label="Confirm Password" variant="outlined" /></Col>
+                                        <Col><TextField id="outlined-basic1" className="w-100 my-2" label="Create Password" name="password" variant="outlined" onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                                            handleRegisterInputChange(e)
+                                        } /></Col>
+                                        <Col><TextField id="password-basic2" className="w-100 my-2" label="Confirm Password" name="confirmPassword" variant="outlined" onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                                            handleRegisterInputChange(e)
+                                        } /></Col>
                                     </Row>
-                                    <CustomButton name="Register" className="w-100 my-3" height={56} background_color="primary" />
+                                    <CustomButton name="Register" className="w-100 my-3" isLoading={registerLoader} height={56} onClick={registerUser} background_color="primary" />
 
-                                 </div>
+                                </div>
                             </Tab>
                         </Tabs>
 

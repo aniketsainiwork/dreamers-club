@@ -61,7 +61,14 @@
 }
 
 .homeTopBanner {
-    height: 532px;
+    height: 562px;
+    align-items: end;
+    display: flex;
+    justify-content: space-between;
+}
+
+.homeTopBannerInnerOne {
+    margin-bottom: 50px;
 }
 
 .flexCenter {
@@ -189,4 +196,120 @@
 
 .css-1t8l2tu-MuiInputBase-input-MuiOutlinedInput-input {
     padding: 13.5px 12px !important;
+}
+
+.alertMessageContainerOuter {
+    position: fixed;
+    top: 41px;
+    right: 10px;
+    width: 320px;
+    z-index: 999999;
+}
+
+.alertMessageContainer {
+    width: 100%;
+    border-radius: 4px;
+}
+
+.fadeInanimation {
+    -webkit-animation: fadeinout 0.2s linear forwards;
+    animation: fadeinout 0.2s linear forwards;
+}
+
+.fadeOutAnimation {
+    -webkit-animation: fadeinout 0.2s linear forwards;
+    animation: fadeinout 0.2s linear forwards;
+}
+
+@-webkit-keyframes fadeOutAni {
+    100% {
+        opacity: 1;
+    }
+    0% {
+        opacity: 0;
+    }
+}
+
+@keyframes fadeOutAni {
+    100% {
+        opacity: 1;
+    }
+    0% {
+        opacity: 0;
+    }
+}
+
+@-webkit-keyframes fadeinout {
+    /* 0%, */
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes fadeinout {
+    /* 0%, */
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+.dropdown-toggle {
+    background: none !important;
+    border: none !important;
+}
+
+.dropdown-toggle::after {
+    display: none !important;
+}
+
+.profileBadgeDiv {
+    color: #047FF7;
+}
+
+.onlineClassDiv {
+    width: fit-content;
+    background: #FFDB43;
+    border-radius: 14px 14px 0px 14px;
+    border-bottom: 2px solid #047FF7;
+}
+
+.topBannerImageContainer {
+    position: absolute;
+    bottom: 0;
+    height: 535px;
+}
+
+.mainWebLogo {
+    height: 44px;
+}
+
+.imageGreenCircle {
+    width: 360px;
+    height: 360px;
+    background-color: #37BE90;
+    display: block;
+    position: absolute;
+    border-radius: 50%;
+    top: 61px;
+    right: -17px;
+}
+
+.ourofferingsCard {
+    box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.06);
+    padding-bottom: 40px;
+}
+
+.css-1v4ccyo{
+    border-radius: 8px !important;
+}
+
+.css-p0rm37{
+    color: #D8D8D8 !important;
+    font-size: 16px !important;
 }

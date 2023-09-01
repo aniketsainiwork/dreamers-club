@@ -1,23 +1,71 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import './Home.css';
-import { Col, Row, Container } from "react-bootstrap";
+import { Col, Row, Container, Dropdown } from "react-bootstrap";
 import CommanText from '../../Components/CommanText/CommanText';
 import CustomButton from 'src/Components/CustomButton/CustomButton';
 import TickImg from 'src/assets/verifyTick.png';
 import OfferingImg from 'src/assets/offering.jpg';
 import AboutUsImg from 'src/assets/aboutUsLogo.png';
 import tickIcon from 'src/assets/tick.png';
+import mainWebLogo from 'src/assets/dreamersClubLogo.png';
+import bannerGirl from 'src/assets/bannerGirl.png';
+import mentor1 from 'src/assets/mentor1.jpeg';
+import mentor2 from 'src/assets/mentor2.jpeg';
+import mentor3 from 'src/assets/mentor3.jpeg';
+import mentor4 from 'src/assets/mentor4.jpeg';
+
 import { Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import AuthDialog from 'src/Components/AuthDialog/AuthDialog';
 import CounsellingDialog from 'src/Components/CounsellingDialog/CounsellingDialog';
+import ResetPasswordDialog from 'src/Components/AuthDialog/ResetPasswordDialog';
+import { RxAvatar } from "react-icons/rx";
+import { BsChevronDown } from "react-icons/bs";
+import EditProfile from 'src/Components/AuthDialog/EditProfile';
+import { useQuery } from 'react-query';
+import { getProfile } from 'src/Components/AuthDialog/AllApis';
+import { LiaLinkedinIn } from "react-icons/lia";
 
 function Home() {
 
     const [AuthDialogStatus, setAuthDialogStatus] = useState(false)
+    const [UserData, setUserData] = useState<any>(null)
+
+    const UserId = localStorage.getItem('user_Id');
+    const userData: any = localStorage.getItem('user');
+
+    useEffect(() => {
+        if (UserId) {
+            let userData: any = localStorage.getItem('user');
+            if (userData != 'undefined') {
+                setUserData(JSON.parse(userData))
+            }
+        }
+    }, [localStorage.getItem('user')])
+
+    const { data: companyProfileData, refetch } = useQuery(
+        ["userProfile"],
+        () => getProfile(UserId),
+        {
+            retry: 1,
+            refetchOnWindowFocus: false,
+            enabled: UserId ? true : false
+        }
+    );
+
+    useEffect(() => {
+        if (companyProfileData?.user) {
+            localStorage.setItem("user", JSON.stringify(companyProfileData?.user));
+            setUserData(companyProfileData?.user)
+        }
+    }, [companyProfileData])
 
     const closeDialog = (data: any) => {
-        setAuthDialogStatus(data)
+        setAuthDialogStatus(data.status)
+
+        if (data?.isResetPassword) {
+            setResetPasswordStatus(data?.isResetPassword)
+        }
     }
 
     const [CounsellingDialogStatus, setCounsellingDialogStatus] = useState(false)
@@ -26,24 +74,52 @@ function Home() {
         setCounsellingDialogStatus(data)
     }
 
+    const [ResetPasswordStatus, setResetPasswordStatus] = useState(false)
+
+    const closeResetDialog = (data: any) => {
+        setResetPasswordStatus(data)
+    }
+
+    const [EditDialog, setEditDialog] = useState(false)
+    const [counclingFormType, setCounclingFormType] = useState('')
+    const closeEditDialog = (data: any) => {
+        refetch()
+        setEditDialog(data)
+    }
+
+    const logout = () => {
+        localStorage.clear();
+        window.location.reload();
+    }
+
     return (
         <>
+            {EditDialog && <EditProfile closeDialogFn={(e: any) => closeEditDialog(e)} dialogOpen={EditDialog} />}
+
+            {ResetPasswordStatus && <ResetPasswordDialog closeDialogFn={(e: any) => closeResetDialog(e)} dialogOpen={ResetPasswordStatus} />}
+
             {AuthDialogStatus && <AuthDialog closeDialogFn={(e: any) => closeDialog(e)} dialogOpen={AuthDialogStatus} />}
 
-            {CounsellingDialogStatus && <CounsellingDialog closeDialogFn={(e: any) => closeCounDialog(e)} dialogOpen={CounsellingDialogStatus} />}
+            {CounsellingDialogStatus && <CounsellingDialog closeDialogFn={(e: any) => closeCounDialog(e)} dialogOpen={CounsellingDialogStatus} counclingType={counclingFormType} />}
 
             <div className="w-100">
                 <Row className="mx-0 homeHeader flexBetween px-4">
-                    <Col className="flexStart">
-                        <div className="mx-4 px-3">
-                            <div className="flexStart">
-                                <CommanText tag="h2" text="Dreamers" fontSize={29} fontWeight={600} colorType="primary" />
-                                <CommanText tag="h2" text=" Club" className="mx-2" fontSize={29} fontWeight={600} colorType="dark" />
+                    <Col className="flexStart mx-0" xs={4}>
+                        <div className="mx-4 px-3 flexStart">
+                            <div className="mainWebLogo">
+                                <img src={mainWebLogo} width="100%" height="100%" />
                             </div>
-                            <CommanText tag="p" text="TRANSFORMING MBA DREAMS INTO REALITY" align="left" fontSize={8} fontWeight={400} colorType="blueGray" />
+
+                            <div>
+                                <div className="flexStart">
+                                    <CommanText tag="h2" text="Dreamers" fontSize={29} fontWeight={600} colorType="primary" />
+                                    <CommanText tag="h2" text=" Club" className="mx-2" fontSize={29} fontWeight={600} colorType="dark" />
+                                </div>
+                                <CommanText tag="p" text="TRANSFORMING DREAMS INTO REALITY" align="left" fontSize={8} fontWeight={400} colorType="blueGray" />
+                            </div>
                         </div>
                     </Col>
-                    <Col className="flexEnd">
+                    <Col className="flexEnd" xs={8}>
                         <div className="flexStart">
                             <CommanText tag="h2" text="Email:" className="mx-2" fontSize={16} fontWeight={500} colorType="dark" />
 
@@ -56,15 +132,34 @@ function Home() {
                             <CommanText tag="h2" text="+91-7780325696" className="mx-1" fontSize={16} fontWeight={400} colorType="dark" />
                         </div>
 
-                        <CustomButton className="mx-4" name="Log in/Sign Up" onClick={() => setAuthDialogStatus(true)} fontSize={16} fontWeight={500} height={26} />
+                        {!UserData && <CustomButton className="mx-4" name="Log in/Sign Up" onClick={() => setAuthDialogStatus(true)} fontSize={16} fontWeight={500} height={26} />}
+
+                        {UserData && <Dropdown>
+                            <Dropdown.Toggle id="dropdown-basic">
+                                <div className="d-flex align-items-center profileBadgeDiv"><span className="mx-2 flexStart"><RxAvatar /> <CommanText tag="h2" text={UserData?.name} className="mx-1" fontSize={14} fontWeight={600} colorType="primary" /></span>
+                                    <BsChevronDown />
+                                </div>
+                            </Dropdown.Toggle>
+
+                            <Dropdown.Menu>
+                                <Dropdown.Item onClick={() => setEditDialog(true)}>Edit Profile</Dropdown.Item>
+                                <Dropdown.Item onClick={() => setResetPasswordStatus(true)}>Change Password</Dropdown.Item>
+                                <Dropdown.Item onClick={logout}>Logout</Dropdown.Item>
+                            </Dropdown.Menu>
+                        </Dropdown>}
+
                     </Col>
                 </Row>
             </div>
 
             <div className="homeContainer">
-                <Row className="mx-0 flexBetween homeTopBanner">
-                    <Col xs={7} className="flexStart">
+                <Row className="mx-0 homeTopBanner">
+                    <Col xs={8} className="flexStart homeTopBannerInnerOne">
                         <div>
+
+                            <div className="onlineClassDiv py-1 px-2">
+                                <CommanText tag="p" text="Online CAT classes" fontSize={14} fontWeight={500} />
+                            </div>
 
                             <CommanText tag="h1" text="Transforming" fontSize={64} fontWeight={600} />
                             <CommanText tag="h1" text="Dreams Into Reality" fontSize={64} fontWeight={600} />
@@ -80,22 +175,27 @@ function Home() {
                                     <div>
                                         <img src={TickImg} height="100%" width="100%" />
                                     </div>
-                                    <CommanText tag="h4" className="mx-1" text="Guidance From Cat Toppers" fontSize={22} fontWeight={400} colorType="dark" />
+                                    <CommanText tag="h4" className="mx-1" text="Guidance from CAT Toppers" fontSize={22} fontWeight={400} colorType="dark" />
                                 </div>
                             </div>
 
                             <div className="flexStart my-5">
-                                <CustomButton name="Request a Callback" onClick={() => setCounsellingDialogStatus(true)} fontSize={16} width={225} fontWeight={600} height={58} />
+                                <CustomButton name="Request a Callback" onClick={() => { setCounsellingDialogStatus(true); setCounclingFormType('request') }} fontSize={16} width={225} fontWeight={600} height={58} />
 
                                 <div className="mx-3">
-                                    <CustomButton name="Enroll Now" onClick={() => setCounsellingDialogStatus(true)} fontSize={16} width={164} fontWeight={600} height={58} borderColor="primary" textColor="primary" background_color="transparent" buttonOutline={true} />
+                                    <CustomButton name="Enroll Now" onClick={() => { setCounsellingDialogStatus(true); setCounclingFormType('enroll') }} fontSize={16} width={164} fontWeight={600} height={58} borderColor="primary" textColor="primary" background_color="transparent" buttonOutline={true} />
                                 </div>
 
                             </div>
 
                         </div>
                     </Col>
-                    <Col xs={3}></Col>
+                    <Col xs={4} className="position-relative h-100">
+                        <div className="imageGreenCircle"></div>
+                        <div className="topBannerImageContainer">
+                            <img src={bannerGirl} width="100%" height="100%" />
+                        </div>
+                    </Col>
                 </Row>
             </div>
 
@@ -104,65 +204,67 @@ function Home() {
             </div>
 
             <div className="homeContainer">
-                <div className="my-5 pt-4">
-                    <div className="flexCenter">
-                        <CommanText tag="h4" align="center" text="Our" fontSize={32} fontWeight={500} colorType="dark" />
-                        <CommanText tag="h4" className="mx-2" align="center" text="Offerings" fontSize={32} fontWeight={500} colorType="primary" />
+                <div className="ourofferingsCard px-4">
+                    <div className="my-5 pt-4">
+                        <div className="flexCenter">
+                            <CommanText tag="h4" align="center" text="Our" fontSize={32} fontWeight={500} colorType="dark" />
+                            <CommanText tag="h4" className="mx-2" align="center" text="Offerings" fontSize={32} fontWeight={500} colorType="primary" />
+                        </div>
+
+                        <CommanText tag="h4" className="my-3" align="center" text="Lorem Ipsum Dolor Sit Amet, Consetetur Sadipscing Elitr, Sed Diam Nonumy Eirmod" fontSize={16} fontWeight={400} colorType="dark" />
+
                     </div>
 
-                    <CommanText tag="h4" className="my-3" align="center" text="Lorem Ipsum Dolor Sit Amet, Consetetur Sadipscing Elitr, Sed Diam Nonumy Eirmod" fontSize={16} fontWeight={400} colorType="dark" />
+                    <Row className="mx-0 flexBetween">
+                        <Col>
+                            <div className="offeringCard">
+                                <div className="offeringImg">
+                                    <img src={OfferingImg} width="100%" height="100%" />
+                                </div>
 
+                                <CommanText tag="h4" className="mt-3 mb-2" align="left" text="Online CAT Classes" fontSize={14} fontWeight={600} colorType="primary" />
+                                <CommanText tag="h4" align="left" text="Attend classes without the hassle of traveling" fontSize={12} fontWeight={500} colorType="textGrey" />
+
+                            </div>
+                        </Col>
+
+                        <Col>
+                            <div className="offeringCard">
+                                <div className="offeringImg">
+                                    <img src={OfferingImg} width="100%" height="100%" />
+                                </div>
+
+                                <CommanText tag="h4" className="mt-3 mb-2" align="left" text="Mock Analysis" fontSize={14} fontWeight={600} colorType="primary" />
+                                <CommanText tag="h4" align="left" text="Mocks are a key aspect of CAT preparation strategy. We help you analyze mocks and improve your performance." fontSize={12} fontWeight={500} colorType="textGrey" />
+
+                            </div>
+                        </Col>
+
+                        <Col>
+                            <div className="offeringCard">
+                                <div className="offeringImg">
+                                    <img src={OfferingImg} width="100%" height="100%" />
+                                </div>
+
+                                <CommanText tag="h4" className="mt-3 mb-2" align="left" text="Gamified Learning" fontSize={14} fontWeight={600} colorType="primary" />
+                                <CommanText tag="h4" align="left" text="CAT prep should be fun. We bring interesting weekly challenges to gamify your preparation." fontSize={12} fontWeight={500} colorType="textGrey" />
+
+                            </div>
+                        </Col>
+
+                        <Col>
+                            <div className="offeringCard">
+                                <div className="offeringImg">
+                                    <img src={OfferingImg} width="100%" height="100%" />
+                                </div>
+
+                                <CommanText tag="h4" className="mt-3 mb-2" align="left" text="WAT/PI Guidance" fontSize={14} fontWeight={600} colorType="primary" />
+                                <CommanText tag="h4" align="left" text="Guidance on how to present your best version and convey your ideas in a coherent manner." fontSize={12} fontWeight={500} colorType="textGrey" />
+
+                            </div>
+                        </Col>
+                    </Row>
                 </div>
-
-                <Row className="mx-0 flexBetween">
-                    <Col>
-                        <div className="offeringCard">
-                            <div className="offeringImg">
-                                <img src={OfferingImg} width="100%" height="100%" />
-                            </div>
-
-                            <CommanText tag="h4" className="mt-3 mb-2" align="left" text="Online CAT Classes" fontSize={14} fontWeight={600} colorType="primary" />
-                            <CommanText tag="h4" align="left" text="Attend classes without the hassle of traveling" fontSize={12} fontWeight={500} colorType="textGrey" />
-
-                        </div>
-                    </Col>
-
-                    <Col>
-                        <div className="offeringCard">
-                            <div className="offeringImg">
-                                <img src={OfferingImg} width="100%" height="100%" />
-                            </div>
-
-                            <CommanText tag="h4" className="mt-3 mb-2" align="left" text="Mock Analysis" fontSize={14} fontWeight={600} colorType="primary" />
-                            <CommanText tag="h4" align="left" text="Mocks are a key aspect of CAT preparation strategy. We help you analyze mocks and improve your performance." fontSize={12} fontWeight={500} colorType="textGrey" />
-
-                        </div>
-                    </Col>
-
-                    <Col>
-                        <div className="offeringCard">
-                            <div className="offeringImg">
-                                <img src={OfferingImg} width="100%" height="100%" />
-                            </div>
-
-                            <CommanText tag="h4" className="mt-3 mb-2" align="left" text="Gamified Learning" fontSize={14} fontWeight={600} colorType="primary" />
-                            <CommanText tag="h4" align="left" text="CAT prep should be fun. We bring interesting weekly challenges to gamify your preparation." fontSize={12} fontWeight={500} colorType="textGrey" />
-
-                        </div>
-                    </Col>
-
-                    <Col>
-                        <div className="offeringCard">
-                            <div className="offeringImg">
-                                <img src={OfferingImg} width="100%" height="100%" />
-                            </div>
-
-                            <CommanText tag="h4" className="mt-3 mb-2" align="left" text="WAT/PI Guidance" fontSize={14} fontWeight={600} colorType="primary" />
-                            <CommanText tag="h4" align="left" text="Guidance on how to present your best version and convey your ideas in a coherent manner." fontSize={12} fontWeight={500} colorType="textGrey" />
-
-                        </div>
-                    </Col>
-                </Row>
             </div>
 
 
@@ -183,57 +285,80 @@ function Home() {
                 <Row className="mx-0 flexBetween">
                     <Col xs={3} className="MentorsCardMain">
                         <div className="MentorsCardMainImg">
-                            <img src={OfferingImg} width="100%" height="100%" />
+                            <img src={mentor1} width="100%" height="100%" />
                         </div>
                         <div className="MentorsCardMainBottom">
                             <div className="MentorsCardMainBottomTopCard px-3">
                                 <CommanText tag="p" align="center" className="my-2" fontSize={16} fontWeight={500} text="Ramakrishna Bhimana" colorType="light" />
 
-                                <CommanText tag="p" align="center" className="my-2" fontSize={12} fontWeight={400} text="DILR mentor. Scored 99.94% ile in CAT with 100%ile in DILR. Pursued MBA from IIM Ahmedabad." colorType="light" />
+                                <CommanText tag="p" align="center" className="my-2" fontSize={12} fontWeight={400} text="DILR mentor. Scored 99.94%ile in CAT with 100%ile in DILR. Pursued MBA from IIM Ahmedabad." colorType="light" />
                             </div>
-                            <CommanText tag="p" className="my-2" fontSize={14} text="/ramakrishnabhimana" colorType="dark" />
+                            <div className="my-2 d-flex align-items-center">
+                                <div className="linkedIcon">
+                                    <LiaLinkedinIn />
+                                </div>
+                                <CommanText tag="p" fontSize={14} text="/ramakrishnabhimana" colorType="dark" />
+                            </div>
                         </div>
                     </Col>
 
                     <Col xs={3} className="MentorsCardMain">
                         <div className="MentorsCardMainImg">
-                            <img src={OfferingImg} width="100%" height="100%" />
+                            <img src={mentor2} width="100%" height="100%" />
                         </div>
                         <div className="MentorsCardMainBottom">
                             <div className="MentorsCardMainBottomTopCard px-3">
-                                <CommanText tag="p" align="center" className="my-2" fontSize={16} fontWeight={500} text="Ramakrishna Bhimana" colorType="light" />
+                                <CommanText tag="p" align="center" className="my-2" fontSize={16} fontWeight={500} text="Pranav CSK" colorType="light" />
 
-                                <CommanText tag="p" align="center" className="my-2" fontSize={12} fontWeight={400} text="DILR mentor. Scored 99.94% ile in CAT with 100%ile in DILR. Pursued MBA from IIM Ahmedabad." colorType="light" />
+                                <CommanText tag="p" align="center" className="my-2" fontSize={12} fontWeight={400} text="VARC mentor. He scored  99.87%ile in CAT VARC section. Pursued MBA from IIM Ahmedabad" colorType="light" />
                             </div>
-                            <CommanText tag="p" className="my-2" fontSize={14} text="/ramakrishnabhimana" colorType="dark" />
+                            <div className="my-2 d-flex align-items-center">
+                                <div className="linkedIcon">
+                                    <LiaLinkedinIn />
+                                </div>
+                                <CommanText tag="p"fontSize={14} text="/PranavCSK" colorType="dark" />
+                            </div>
+
                         </div>
                     </Col>
 
                     <Col xs={3} className="MentorsCardMain">
                         <div className="MentorsCardMainImg">
-                            <img src={OfferingImg} width="100%" height="100%" />
+                            <img src={mentor3} width="100%" height="100%" />
                         </div>
                         <div className="MentorsCardMainBottom">
                             <div className="MentorsCardMainBottomTopCard px-3">
-                                <CommanText tag="p" align="center" className="my-2" fontSize={16} fontWeight={500} text="Ramakrishna Bhimana" colorType="light" />
+                                <CommanText tag="p" align="center" className="my-2" fontSize={16} fontWeight={500} text="Vinod Mummidisetti" colorType="light" />
 
-                                <CommanText tag="p" align="center" className="my-2" fontSize={12} fontWeight={400} text="DILR mentor. Scored 99.94% ile in CAT with 100%ile in DILR. Pursued MBA from IIM Ahmedabad." colorType="light" />
+                                <CommanText tag="p" align="center" className="my-2" fontSize={12} fontWeight={400} text="QA mentor. He scored 99.92%ile in QA with overall 99.82%ile in CAT. Pursued MBA from IIM Ahmedabad." colorType="light" />
                             </div>
-                            <CommanText tag="p" className="my-2" fontSize={14} text="/ramakrishnabhimana" colorType="dark" />
+                            <div className="my-2 d-flex align-items-center">
+                                <div className="linkedIcon">
+                                    <LiaLinkedinIn />
+                                </div>
+                                <CommanText tag="p"fontSize={14} text="/VinodMummidisetti" colorType="dark" />
+                            </div>
+
                         </div>
                     </Col>
 
                     <Col xs={3} className="MentorsCardMain">
                         <div className="MentorsCardMainImg">
-                            <img src={OfferingImg} width="100%" height="100%" />
+                            <img src={mentor4} width="100%" height="100%" />
                         </div>
                         <div className="MentorsCardMainBottom">
                             <div className="MentorsCardMainBottomTopCard px-3">
-                                <CommanText tag="p" align="center" className="my-2" fontSize={16} fontWeight={500} text="Ramakrishna Bhimana" colorType="light" />
+                                <CommanText tag="p" align="center" className="my-2" fontSize={16} fontWeight={500} text="Kalyan Konidala" colorType="light" />
 
-                                <CommanText tag="p" align="center" className="my-2" fontSize={12} fontWeight={400} text="DILR mentor. Scored 99.94% ile in CAT with 100%ile in DILR. Pursued MBA from IIM Ahmedabad." colorType="light" />
+                                <CommanText tag="p" align="center" className="my-2" fontSize={12} fontWeight={400} text="QA mentor. He scored 99.79%ile in QA with overall 99.69%ile in CAT. Pursued MBA from IIM Ahmedabad." colorType="light" />
                             </div>
-                            <CommanText tag="p" className="my-2" fontSize={14} text="/ramakrishnabhimana" colorType="dark" />
+                            <div className="my-2 d-flex align-items-center">
+                                <div className="linkedIcon">
+                                    <LiaLinkedinIn />
+                                </div>
+                                <CommanText tag="p"fontSize={14} text="/KalyanKonidala" colorType="dark" />
+                            </div>
+
                         </div>
                     </Col>
 
@@ -268,7 +393,7 @@ function Home() {
                                     <CommanText tag="p" fontSize={16} fontWeight={400} text="Mentors Who Have Coached Several Students To The Top B-Schools In The Country (Iim-A,B,C Etc.)." colorType="dark" />
                                 </div>
 
-                                <div className="my-5">
+                                {/* <div className="my-5">
                                     <div className="flexStart my-1">
                                         <div className="tickIcon">
                                             <img src={tickIcon} width="100%" height="100%" />
@@ -277,7 +402,7 @@ function Home() {
                                         <CommanText className="mx-2" tag="p" fontSize={24} fontWeight={600} text="Live online classes" colorType="dark" />
                                     </div>
                                     <CommanText tag="p" fontSize={16} fontWeight={400} text="Live Teaching Where Can Students Can Learn In An Engaging Manner" colorType="dark" />
-                                </div>
+                                </div> */}
 
                                 <div className="my-5">
                                     <div className="flexStart my-1">
@@ -287,7 +412,7 @@ function Home() {
 
                                         <CommanText className="mx-2" tag="p" fontSize={24} fontWeight={600} text="1:1 mentorship" colorType="dark" />
                                     </div>
-                                    <CommanText tag="p" fontSize={16} fontWeight={400} text="Mentors That Support You Through Your Preparation" colorType="dark" />
+                                    <CommanText tag="p" fontSize={16} fontWeight={400} text="Discuss what your goals are and get to know the best way to reach them. Dreamers club opens gates for vast alumni network of IIM A, B and C. People from all walks of life can guide you to reach your goal" colorType="dark" />
                                 </div>
 
                                 <div className="my-5">
@@ -360,11 +485,11 @@ function Home() {
                             aria-controls="panel2a-content"
                             id="panel2a-header"
                         >
-                            <CommanText tag="h2" text="Do I have to physically attend classes in a classroom?" fontSize={20} fontWeight={400} colorType="dark" />
+                            <CommanText tag="h2" text="Are the classes going to be pre-recorded content or live?" fontSize={20} fontWeight={400} colorType="dark" />
 
                         </AccordionSummary>
                         <AccordionDetails>
-                            <CommanText tag="h2" text="No, you don’t. The classes will be conducted in an online manner and students can attend them from wherever there are." fontSize={20} fontWeight={400} colorType="textGrey" />
+                            <CommanText tag="h2" text="The classes will be taught in a live manner in order to make them engaging for the students." fontSize={20} fontWeight={400} colorType="textGrey" />
 
                         </AccordionDetails>
                     </Accordion>
@@ -378,11 +503,11 @@ function Home() {
                             aria-controls="panel3a-content"
                             id="panel3a-header"
                         >
-                            <CommanText tag="h2" text="Do I have to physically attend classes in a classroom?" fontSize={20} fontWeight={400} colorType="dark" />
+                            <CommanText tag="h2" text="Are there going to be mock exams?" fontSize={20} fontWeight={400} colorType="dark" />
 
                         </AccordionSummary>
                         <AccordionDetails>
-                            <CommanText tag="h2" text="No, you don’t. The classes will be conducted in an online manner and students can attend them from wherever there are." fontSize={20} fontWeight={400} colorType="textGrey" />
+                            <CommanText tag="h2" text="Yes, there are going to be mock exams and personalized mock analysis." fontSize={20} fontWeight={400} colorType="textGrey" />
 
                         </AccordionDetails>
                     </Accordion>
@@ -395,11 +520,11 @@ function Home() {
                             aria-controls="panel4a-content"
                             id="panel4a-header"
                         >
-                            <CommanText tag="h2" text="Do I have to physically attend classes in a classroom?" fontSize={20} fontWeight={400} colorType="dark" />
+                            <CommanText tag="h2" text="Can I reach out to mentors for support?" fontSize={20} fontWeight={400} colorType="dark" />
 
                         </AccordionSummary>
                         <AccordionDetails>
-                            <CommanText tag="h2" text="No, you don’t. The classes will be conducted in an online manner and students can attend them from wherever there are." fontSize={20} fontWeight={400} colorType="textGrey" />
+                            <CommanText tag="h2" text="Yes. You can schedule a meeting with mentors and get your queries answered 1-on-1" fontSize={20} fontWeight={400} colorType="textGrey" />
 
                         </AccordionDetails>
                     </Accordion>
@@ -411,10 +536,10 @@ function Home() {
                 <div className="footerTopCard flexBetween">
                     <div>
                         <CommanText tag="p" text="Ready to get started?" colorType="primary" fontSize={32} fontWeight={500} />
-                        <CommanText tag="p" text="Talk to us Today" colorType="dark" fontSize={32} fontWeight={400} />
+                        <CommanText tag="p" text="Free Counselling Today" colorType="dark" fontSize={32} fontWeight={400} />
                     </div>
 
-                    <CustomButton onClick={() => setCounsellingDialogStatus(true)} name="Request a Callback" fontSize={16} width={225} fontWeight={600} height={58} />
+                    <CustomButton onClick={() => { setCounsellingDialogStatus(true); setCounclingFormType('request') }} name="Request a Callback" fontSize={16} width={225} fontWeight={600} height={58} />
 
                 </div>
 

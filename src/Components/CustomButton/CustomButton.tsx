@@ -1,9 +1,9 @@
 import React, { CSSProperties } from "react";
 import { Button } from "react-bootstrap";
-// import Loader from "../loader/Loader";
 import "./CustomButton.css";
 // import CommanImg from "src/Utils/CommanImg";
 import CommanText from "../CommanText/CommanText";
+import Loader from "src/Utils/loader/Loader";
 
 interface buttonProps {
     name?: string;
@@ -123,7 +123,7 @@ function CustomButton({
                 <>
                     {isLoading ? (
                         <span>
-                            {/* <Loader color={loaderColor} size={loaderSize} /> */}
+                            <Loader color={loaderColor} size={loaderSize} />
                         </span>
                     ) : (
                             <span>
