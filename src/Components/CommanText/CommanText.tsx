@@ -68,7 +68,7 @@ function CommanText({
                 return "#ff0000";
 
             case "textGrey":
-                return "#9E9E9E";
+                return "#5F6368";
 
             case "blue":
                 return "#0084BD";
@@ -214,7 +214,6 @@ function CommanText({
                         fontWeight: fontWeight,
                         fontSize: fontSize,
                         lineHeight: lineHeight,
-                        wordBreak: wordBreak,
                         ...style,
                     }}
                 >

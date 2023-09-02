@@ -18,8 +18,8 @@ export const editProfileApi = (data: any, userId: any) =>
 export const getProfile = (userId: any) =>
   axiosInstance.get(`profile/${userId}`).then((res: any) => res?.data);
 
-export const saveCouncling = (data: any, userId: any) =>
-  axiosInstance.post(`counselling/${userId}`, data).then((res: any) => res?.data);
+export const saveCouncling = (data: any) =>
+  axiosInstance.post(`counselling`, data).then((res: any) => res?.data);
 
 export const saveEnrolment = (data: any, userId: any) =>
   axiosInstance.post(`enrollment/${userId}`, data).then((res: any) => res?.data);

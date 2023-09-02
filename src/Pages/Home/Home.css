@@ -8,6 +8,7 @@
     border: 1px solid #D8D8D8;
     padding: 14px;
     height: 301px;
+    border-radius: 4px;
 }
 
 .MentorsCardMain {
@@ -90,13 +91,15 @@
 .footerTopCard {
     border: 1px solid;
     background-color: #F2F9FF;
-    height: 186px;
+    min-height: 186px;
     position: absolute;
     width: 80%;
     border-radius: 13px;
     margin-left: 10%;
     top: -86px;
     padding: 0px 90px;
+    box-sizing: border-box;
+    overflow: hidden;
 }
 
 .TestimonialContainerInner {
@@ -127,4 +130,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+.lineHeight17 {
+    line-height: 17px;
 }

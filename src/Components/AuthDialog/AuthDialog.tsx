@@ -61,11 +61,13 @@ function AuthDialog({ dialogOpen = false, closeDialogFn }: DialogProps) {
 
     const { mutate: loginUserMutate, isLoading: loginLoader } = useMutation(loginApi, {
         onSuccess: (data: any, localData: any) => {
-            localStorage.setItem("authToken", data?.token);
-            localStorage.setItem("user_Id", data?.user?.id);
-            localStorage.setItem("user", JSON.stringify(data?.user));
+            if (data?.status) {
+                localStorage.setItem("authToken", data?.token);
+                localStorage.setItem("user_Id", data?.user?.id);
+                localStorage.setItem("user", JSON.stringify(data?.user));
 
-            closeDialogFn({ status: false, isResetPassword: false })
+                closeDialogFn({ status: false, isResetPassword: false })
+            }
             if (data?.message) {
                 showMessage({
                     msgTyp: "success",
@@ -103,12 +105,13 @@ function AuthDialog({ dialogOpen = false, closeDialogFn }: DialogProps) {
         postRegisterData,
         {
             onSuccess: (data: any, localData: any) => {
+                if (data?.status) {
+                    localStorage.setItem("authToken", data?.token);
+                    localStorage.setItem("user_Id", data?.user?.id);
+                    localStorage.setItem("user", JSON.stringify(data?.user));
 
-                localStorage.setItem("authToken", data?.token);
-                localStorage.setItem("user_Id", data?.user?.id);
-                localStorage.setItem("user", JSON.stringify(data?.user));
-
-                closeDialogFn({ status: false, isResetPassword: false })
+                    closeDialogFn({ status: false, isResetPassword: false })
+                }
                 if (data?.message) {
                     showMessage({
                         msgTyp: "success",
@@ -173,9 +176,9 @@ function AuthDialog({ dialogOpen = false, closeDialogFn }: DialogProps) {
 
                     </Col>
 
-                    <Col xs={8}>
+                    <Col xs={12} md={8}>
                         <div className="flexEnd px-3 py-2">
-                            <CommanText className="pointer" tag="p" text="Close" onClick={() => closeDialogFn({ status: false, isResetPassword: true })} fontSize={14} fontWeight={400} />
+                            <CommanText className="pointer" tag="p" text="Close" onClick={() => closeDialogFn({ status: false, isResetPassword: false })} fontSize={14} fontWeight={400} />
                         </div>
 
 
@@ -187,10 +190,10 @@ function AuthDialog({ dialogOpen = false, closeDialogFn }: DialogProps) {
                                     <CommanText className="my-3" tag="p" align="center" text="Login to your DremersClub Account" fontSize={16} fontWeight={400} colorType="textGrey" />
 
 
-                                    <TextField id="outlined-basic" name="email" onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                                    <TextField id="email" name="email" onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                                         handleInputChange(e)
                                     } className="w-100 my-2" label="Email id" variant="outlined" />
-                                    <TextField id="password-basic" name="password" onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                                    <TextField id="password" type="password" name="password" onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                                         handleInputChange(e)
                                     } className="w-100 my-2" label="Password" variant="outlined" />
 
@@ -205,20 +208,20 @@ function AuthDialog({ dialogOpen = false, closeDialogFn }: DialogProps) {
                                     <CommanText className="my-3" tag="p" align="center" text="Create a Free DremersClub Account" fontSize={16} fontWeight={400} colorType="textGrey" />
 
 
-                                    <TextField id="outlined-basic" className="w-100 my-2" label="Name" name="name" variant="outlined" onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                                    <TextField id="registerName" className="w-100 my-2" label="Name" name="name" variant="outlined" onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                                         handleRegisterInputChange(e)
                                     } />
-                                    <TextField id="password-basic" className="w-100 my-2" label="Email id" name="email" variant="outlined" onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                                    <TextField id="registerEmail" className="w-100 my-2" label="Email id" name="email" variant="outlined" onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                                         handleRegisterInputChange(e)
                                     } />
-                                    <TextField id="password-basic" className="w-100 my-2" label="Phone No." name="phoneNumber" variant="outlined" onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                                    <TextField id="registerPhone" className="w-100 my-2" label="Phone No." name="phoneNumber" variant="outlined" onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                                         handleRegisterInputChange(e)
                                     } />
                                     <Row>
-                                        <Col><TextField id="outlined-basic1" className="w-100 my-2" label="Create Password" name="password" variant="outlined" onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                                        <Col><TextField id="registerPassword" className="w-100 my-2" type="password" label="Create Password" name="password" variant="outlined" onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                                             handleRegisterInputChange(e)
                                         } /></Col>
-                                        <Col><TextField id="password-basic2" className="w-100 my-2" label="Confirm Password" name="confirmPassword" variant="outlined" onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                                        <Col><TextField id="registerConfirmPassword" className="w-100 my-2" type="password" label="Confirm Password" name="confirmPassword" variant="outlined" onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                                             handleRegisterInputChange(e)
                                         } /></Col>
                                     </Row>

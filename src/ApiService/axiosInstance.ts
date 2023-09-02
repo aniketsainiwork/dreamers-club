@@ -4,7 +4,7 @@ import { axiosError } from "src/ApiService/axiosError";
 const axiosInstance = axios.create({
     // baseURL: "https://foxfinity-api.signaturedev.in/vendor/v1/",
 
-    baseURL: "http://3.7.63.35/api/",
+    baseURL: "https://dreamersclub.co.in/api/",
     headers: {
         // "Accept": '*/*',
         // "Content-Type": 'application/json'

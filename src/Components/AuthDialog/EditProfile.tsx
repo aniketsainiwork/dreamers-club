@@ -94,15 +94,15 @@ function EditProfile({ dialogOpen = false, closeDialogFn }: DialogProps) {
                     </div>
 
                     <div className="px-5 py-5">
-                        <Col xs={7}>
+                        <Col xs={12}>
 
-                            <TextField id="outlined-basic" name="phone" disabled value={EditData?.phoneNumber} className="w-100 my-2" label="Phone Number" variant="outlined" />
+                            <TextField id="phone" name="phone" disabled value={EditData?.phoneNumber} className="w-100 my-2" label="Phone Number" variant="outlined" />
 
-                            <TextField id="outlined-basic" name="name" value={EditData?.name} onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                            <TextField id="name" name="name" value={EditData?.name} onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                                 handleInputChange(e)
                             } className="w-100 my-2" label="Phone No." variant="outlined" />
 
-                            <TextField id="outlined-basic" name="email" value={EditData?.email} onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                            <TextField id="email" name="email" value={EditData?.email} onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                                 handleInputChange(e)
                             } className="w-100 my-2" label="Email" variant="outlined" />
 

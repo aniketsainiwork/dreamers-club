@@ -16,11 +16,16 @@ interface DialogProps {
 function CounsellingDialog({ dialogOpen = false, closeDialogFn, counclingType }: DialogProps) {
     const [UserId, setUserId] = useState('')
 
+    const LocalUserID = localStorage.getItem('user_Id');
+
+
     useEffect(() => {
-        let userData: any = localStorage.getItem('user');
-        let userJsonData = JSON.parse(userData);
-        setUserId(userJsonData?.id)
-    }, [])
+        if (LocalUserID != 'undefined' && LocalUserID != undefined) {
+            let userData: any = localStorage.getItem('user');
+            let userJsonData = JSON.parse(userData);
+            setUserId(userJsonData?.id)
+        }
+    }, [localStorage.getItem('user')])
 
     const [Councling, setCouncling] = useState<any>({
         name: "",
@@ -60,7 +65,7 @@ function CounsellingDialog({ dialogOpen = false, closeDialogFn, counclingType }:
     }
 
     const { mutate: CounclingMutate, isLoading: registerLoader } = useMutation(
-        (CounclingMutate) => saveCouncling(CounclingMutate, UserId),
+        (CounclingMutate) => saveCouncling(CounclingMutate),
         {
             onSuccess: (data: any, localData: any) => {
 
@@ -68,7 +73,7 @@ function CounsellingDialog({ dialogOpen = false, closeDialogFn, counclingType }:
                 if (data?.message) {
                     showMessage({
                         msgTyp: "success",
-                        message: "Request sent successfully",
+                        message: "Thanks for submitting your details. Our team will get in touch with you shortly!",
                     });
                 }
             },
@@ -83,7 +88,7 @@ function CounsellingDialog({ dialogOpen = false, closeDialogFn, counclingType }:
                 if (data?.message) {
                     showMessage({
                         msgTyp: "success",
-                        message: "User enroll successfully",
+                        message: "Thanks for submitting your details. Our team will get in touch with you shortly!",
                     });
                 }
             },
@@ -92,45 +97,51 @@ function CounsellingDialog({ dialogOpen = false, closeDialogFn, counclingType }:
 
     return (<>
         {(dialogOpen) && <div className="dialogBackdrop">
-            <div className="dialogCard">
+            <div className="dialogCard" style={{
+                width: counclingType === 'request' ? '40%' : '62%',
+                marginLeft: counclingType === 'request' ? '30%' : '19%',
+            }}>
                 <Row>
                     {counclingType !== 'request' && <Col xs={4} className="authDialogLeft px-4 py-5 flexCenter">
 
                         <div>
                             <CommanText className="mx-0 mb-3" tag="p" align="center" fontSize={16} fontWeight={500} text="Don’t Miss the Chance" colorType="light" />
+
+                            <p className="discountTotalPrice">₹20,000</p>
+                            <p className="discountPrice">₹15,000</p>
+
                             <CommanText className="mx-0 mb-3" tag="p" align="center" fontSize={16} fontWeight={500} text="*Limited time offer" colorType="light" />
 
                         </div>
 
                     </Col>}
 
-                    <Col xs={8} className="m-auto">
+                    <Col xs={counclingType === 'request' ? 12 : 8} className="m-auto">
                         <div className="flexEnd px-3 py-2">
                             <CommanText className="pointer" tag="p" text="Close" onClick={() => closeDialogFn(false)} fontSize={14} fontWeight={400} />
                         </div>
 
                         <div className="w-100 px-5">
                             <div className="flexStart my-3">
-                                <CommanText tag="p" align="left" text="Free" fontSize={24} fontWeight={500} colorType="dark" />
-                                <CommanText tag="p" align="left" className="mx-1" text="Counselling" fontSize={24} fontWeight={500} colorType="primary" />
+                                <CommanText tag="p" align="left" text="Talk to" fontSize={24} fontWeight={500} colorType="dark" />
+                                <CommanText tag="p" align="left" className="mx-1" text="us" fontSize={24} fontWeight={500} colorType="primary" />
                             </div>
 
-                            <TextField id="outlined-basic" className="w-100 my-2" name="name" label="Name" variant="outlined" onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                            <TextField id="name" className="w-100 my-2" name="name" label="Name" variant="outlined" onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                                 handleInputChange(e)
                             } />
-                            <TextField id="password-basic" className="w-100 my-2" name="phoneNumber" label="Mobile No" variant="outlined" onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                            <TextField id="phoneNumber" className="w-100 my-2" name="phoneNumber" label="Mobile No" variant="outlined" onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                                 handleInputChange(e)
                             } />
-                            <TextField id="password-basic" className="w-100 my-2" name="email" label="Email id" variant="outlined" onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                            <TextField id="email" className="w-100 my-2" name="email" label="Email id" variant="outlined" onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                                 handleInputChange(e)
                             } />
-                            <TextField id="password-basic" className="w-100 my-2" name="additionalInformation" label="Additional Information" variant="outlined" onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                            <TextField id="collage" className="w-100 my-2" name="collage" label="College" variant="outlined" onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                                 handleInputChange(e)
                             } />
-                            <TextField id="password-basic" className="w-100 my-2" name="collage" label="Collage" variant="outlined" onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                            <TextField id="additionalInfo" className="w-100 my-2" name="additionalInformation" label="Additional Information" variant="outlined" onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                                 handleInputChange(e)
                             } />
-
 
                             <CustomButton name="Request a Callback" isLoading={enrolmentLoader || registerLoader} className="w-100 my-4" onClick={saveData} height={56} background_color="primary" />
 

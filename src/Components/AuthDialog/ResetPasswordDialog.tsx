@@ -101,15 +101,18 @@ function ResetPasswordDialog({ dialogOpen = false, closeDialogFn }: DialogProps)
     return (
         <>
             {(dialogOpen) && <div className="dialogBackdrop">
-                <div className="dialogCard">
+                <div className="dialogCard" style={{
+                    width: '40%',
+                    marginLeft: '30%',
+                }}>
                     <div className="flexEnd px-3 py-2">
                         <CommanText className="pointer" tag="p" text="Close" onClick={() => closeDialogFn(false)} fontSize={14} fontWeight={400} />
                     </div>
 
                     <div className="px-5 py-5">
-                        {!isOtpReceived && <Col xs={7} className="m-auto">
+                        {!isOtpReceived && <Col xs={12} className="m-auto">
                             <CommanText className="my-2" tag="p" fontSize={22} fontWeight={500} text="Enter registered number to get OTP" colorType="dark" />
-                            <TextField id="outlined-basic" name="phone" onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                            <TextField id="phone" name="phone" onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                                 handlePhoneChange(e)
                             } className="w-100 my-2" label="Phone Number" variant="outlined" />
 
@@ -117,9 +120,9 @@ function ResetPasswordDialog({ dialogOpen = false, closeDialogFn }: DialogProps)
                             <CustomButton name="Send OTP" isLoading={getOtpLoader} className="w-100 my-3" onClick={sendOtp} height={56} background_color="primary" />
                         </Col>}
 
-                        {(isOtpReceived && !isOtpVeified) && <Col xs={7} className="m-auto">
+                        {(isOtpReceived && !isOtpVeified) && <Col xs={12} className="m-auto">
                             <CommanText className="my-2" tag="p" fontSize={22} fontWeight={500} text="Enter OTP sent on your phone number" colorType="dark" />
-                            <TextField id="outlined-basic" name="otp" value={Otp} onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                            <TextField id="otp" name="otp" value={Otp} onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                                 handleOtpChange(e)
                             } className="w-100 my-2" label="OTP" variant="outlined" />
 
@@ -127,15 +130,15 @@ function ResetPasswordDialog({ dialogOpen = false, closeDialogFn }: DialogProps)
                             <CustomButton name="Continue" className="w-100 my-3" onClick={verifyOtp} height={56} background_color="primary" />
                         </Col>}
 
-                        {isOtpVeified && <Col xs={7} className="m-auto">
+                        {isOtpVeified && <Col xs={12} className="m-auto">
                             <CommanText className="my-2" tag="p" fontSize={22} fontWeight={500} text="Create password" colorType="dark" />
 
-                            <TextField id="outlined-basic" name="password" onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                            <TextField id="Password" type="password" name="password" onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                                 handlepasswordChange(e)
                             } className="w-100 my-2" label="Password" variant="outlined" />
 
 
-                            <TextField id="outlined-basic" name="confirmPassword" onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                            <TextField id="confirmPassword" type="password" name="confirmPassword" onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                                 handlepasswordChange(e)
                             } className="w-100 my-2" label="Confirm Password" variant="outlined" />
 
