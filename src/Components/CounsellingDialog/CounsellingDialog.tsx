@@ -68,12 +68,13 @@ function CounsellingDialog({ dialogOpen = false, closeDialogFn, counclingType }:
         (CounclingMutate) => saveCouncling(CounclingMutate),
         {
             onSuccess: (data: any, localData: any) => {
-
-                closeDialogFn(false)
+                if (data?.status) {
+                    closeDialogFn(false)
+                }
                 if (data?.message) {
                     showMessage({
                         msgTyp: "success",
-                        message: "Thanks for submitting your details. Our team will get in touch with you shortly!",
+                        message: "Thanks for expressing your intrest. Our team will get in touch with you shortly!",
                     });
                 }
             },
@@ -81,14 +82,16 @@ function CounsellingDialog({ dialogOpen = false, closeDialogFn, counclingType }:
     );
 
     const { mutate: enrolmentMutate, isLoading: enrolmentLoader } = useMutation(
-        (CounclingMutate) => saveEnrolment(CounclingMutate, UserId),
+        (CounclingMutate) => saveEnrolment(CounclingMutate),
         {
             onSuccess: (data: any, localData: any) => {
-                closeDialogFn(false)
+                if (data?.status) {
+                    closeDialogFn(false)
+                }
                 if (data?.message) {
                     showMessage({
                         msgTyp: "success",
-                        message: "Thanks for submitting your details. Our team will get in touch with you shortly!",
+                        message: "Thanks for expressing your intrest. Our team will get in touch with you shortly!",
                     });
                 }
             },
@@ -107,25 +110,40 @@ function CounsellingDialog({ dialogOpen = false, closeDialogFn, counclingType }:
                         <div>
                             <CommanText className="mx-0 mb-3" tag="p" align="center" fontSize={16} fontWeight={500} text="Don’t Miss the Chance" colorType="light" />
 
-                            <p className="discountTotalPrice">₹20,000</p>
-                            <p className="discountPrice">₹15,000</p>
+                            <p className="discountTotalPrice">₹19,999 /-</p>
+                            <p className="discountPrice">₹14,999 /- (25% off)</p>
 
-                            <CommanText className="mx-0 mb-3" tag="p" align="center" fontSize={16} fontWeight={500} text="*Limited time offer" colorType="light" />
+                            <CommanText className="mx-0 mb-3" tag="p" align="center" fontSize={16} fontWeight={500} text="*Limited time offer till 15 September" colorType="light" />
+
 
                         </div>
 
                     </Col>}
 
-                    <Col xs={counclingType === 'request' ? 12 : 8} className="m-auto">
+                    <Col xs={counclingType === 'request' ? 12 : 12} md={counclingType === 'request' ? 12 : 8} className="m-auto">
                         <div className="flexEnd px-3 py-2">
                             <CommanText className="pointer" tag="p" text="Close" onClick={() => closeDialogFn(false)} fontSize={14} fontWeight={400} />
                         </div>
 
                         <div className="w-100 px-5">
-                            <div className="flexStart my-3">
+                            {counclingType === 'request' ? <div className="flexStart my-3">
                                 <CommanText tag="p" align="left" text="Talk to" fontSize={24} fontWeight={500} colorType="dark" />
                                 <CommanText tag="p" align="left" className="mx-1" text="us" fontSize={24} fontWeight={500} colorType="primary" />
-                            </div>
+                            </div> : <div className="flexStart my-3">
+                                <CommanText tag="p" align="left" text="Enroll" fontSize={24} fontWeight={500} colorType="dark" />
+                                <CommanText tag="p" align="left" className="mx-1" text="Now" fontSize={24} fontWeight={500} colorType="primary" />
+                            </div>}
+
+                            {counclingType !== 'request' && <div className="isMobileView ">
+                                <div className="isMobileViewOffer my-5">
+                                    <CommanText className="mx-0 mb-1" tag="p" align="center" fontSize={16} fontWeight={500} text="Don’t Miss the chance to be a part Dreamers Club" colorType="primary" />
+
+                                    <p className="discountTotalPrice">₹19,999 /-</p>
+                                    <p className="discountPrice mb-1">₹14,999 /- (25% off)</p>
+
+                                    <CommanText className="mx-0 mb-3" tag="p" align="center" fontSize={16} fontWeight={500} text="*Limited time offer till 15 September" colorType="primary" />
+                                </div>
+                            </div>}
 
                             <TextField id="name" className="w-100 my-2" name="name" label="Name" variant="outlined" onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                                 handleInputChange(e)
@@ -143,7 +161,7 @@ function CounsellingDialog({ dialogOpen = false, closeDialogFn, counclingType }:
                                 handleInputChange(e)
                             } />
 
-                            <CustomButton name="Request a Callback" isLoading={enrolmentLoader || registerLoader} className="w-100 my-4" onClick={saveData} height={56} background_color="primary" />
+                            <CustomButton name={counclingType !== 'request' ? "Submit" : "Request a Callback"} isLoading={enrolmentLoader || registerLoader} className="w-100 my-4" onClick={saveData} height={56} background_color="primary" />
 
                         </div>
 

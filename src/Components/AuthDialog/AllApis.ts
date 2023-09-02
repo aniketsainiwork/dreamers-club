@@ -21,5 +21,5 @@ export const getProfile = (userId: any) =>
 export const saveCouncling = (data: any) =>
   axiosInstance.post(`counselling`, data).then((res: any) => res?.data);
 
-export const saveEnrolment = (data: any, userId: any) =>
-  axiosInstance.post(`enrollment/${userId}`, data).then((res: any) => res?.data);
+export const saveEnrolment = (data: any) =>
+  axiosInstance.post(`enrollment`, data).then((res: any) => res?.data);

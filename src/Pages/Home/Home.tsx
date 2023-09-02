@@ -277,14 +277,14 @@ function Home() {
                                 </div>
                             </div>
 
-                            {/* <div className="flexStart my-5 bannerPromo">
+                            <div className="flexStart my-5 bannerPromo">
                                 <CustomButton name="Request a Callback" className="requestBtn" onClick={() => { setCounsellingDialogStatus(true); setCounclingFormType('request') }} fontSize={16} fontWeight={600} height={58} />
 
                                 <div className="bannerPromoMx4">
                                     <CustomButton name="Enroll Now" className="enrollBtn" onClick={() => { setCounsellingDialogStatus(true); setCounclingFormType('enroll') }} fontSize={16} fontWeight={600} height={58} borderColor="primary" textColor="primary" background_color="transparent" buttonOutline={true} />
                                 </div>
 
-                            </div> */}
+                            </div>
 
                         </div>
                     </Col>
@@ -323,7 +323,7 @@ function Home() {
                                     </div>
 
                                     <CommanText tag="h4" className="mt-3 mb-2" align="left" text="Online CAT Classes" fontSize={14} fontWeight={600} colorType="primary" />
-                                    <CommanText tag="h4" className="lineHeight17" align="left" text="Attend classes without the hassle of traveling" fontSize={12} fontWeight={400} colorType="dark" />
+                                    <CommanText tag="h4" className="lineHeight17" align="left" text="Attend classes without the hassle of travelling" fontSize={12} fontWeight={400} colorType="dark" />
 
                                 </div>
                             </Carousel.Item>
@@ -375,7 +375,7 @@ function Home() {
                                     </div>
 
                                     <CommanText tag="h4" className="mt-3 mb-2" align="left" text="Online CAT Classes" fontSize={14} fontWeight={600} colorType="primary" />
-                                    <CommanText tag="h4" className="lineHeight17" align="left" text="Attend classes without the hassle of traveling" fontSize={12} fontWeight={400} colorType="dark" />
+                                    <CommanText tag="h4" className="lineHeight17" align="left" text="Attend classes without the hassle of travelling" fontSize={12} fontWeight={400} colorType="dark" />
 
                                 </div>
                             </Col>
@@ -643,7 +643,7 @@ function Home() {
 
                                         <CommanText className="mx-2" tag="p" fontSize={24} fontWeight={600} text="Learn from the best" colorType="dark" />
                                     </div>
-                                    <CommanText tag="p" fontSize={16} fontWeight={400} text="Mentors Who Have Coached Several Students To The Top B-Schools In The Country (Iim-A,B,C Etc.)." colorType="dark" />
+                                    <CommanText tag="p" fontSize={16} fontWeight={400} text="Mentors who nailed CAT themselves. Each of us developed a taste for specific sections, and will be sharing our refined strategies with you. Moreover, we cracked almost all the top B-School interviews." colorType="dark" />
                                 </div>
 
                                 {/* <div className="my-5">
@@ -665,7 +665,7 @@ function Home() {
 
                                         <CommanText className="mx-2" tag="p" fontSize={24} fontWeight={600} text="1:1 mentorship" colorType="dark" />
                                     </div>
-                                    <CommanText tag="p" fontSize={16} fontWeight={400} text="Discuss what your goals are and get to know the best way to reach them. Dreamers club opens gates for vast alumni network of IIM A, B and C. People from all walks of life can guide you to reach your goal" colorType="dark" />
+                                    <CommanText tag="p" fontSize={16} fontWeight={400} text="Mentors who have coached several students to the top B-Schools in the country (IIM - A,B,C etc.). We are passionate about mentorship and will hand-hold you through different phases of preparation." colorType="dark" />
                                 </div>
 
                                 <div className="my-5">
@@ -676,7 +676,7 @@ function Home() {
 
                                         <CommanText className="mx-2" tag="p" fontSize={24} fontWeight={600} text="Career building" colorType="dark" />
                                     </div>
-                                    <CommanText tag="p" fontSize={16} fontWeight={400} text="Discuss what your goals are and how best to approach them" colorType="dark" />
+                                    <CommanText tag="p" fontSize={16} fontWeight={400} text="Discuss what your goals are and we will help you reach them. Dreamers club opens gates for the vast alumni network of IIM A, B and C. People from all walks of life can guide you to reach your goal." colorType="dark" />
                                 </div>
                             </div>
                         </Col>

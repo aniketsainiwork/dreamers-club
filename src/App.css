@@ -429,6 +429,22 @@ a {
     color: white;
 }
 
+.isMobileViewOffer .discountTotalPrice {
+    text-decoration: line-through;
+    font-size: 16px;
+    font-weight: 500;
+    text-align: center;
+    color: #047ff8;
+}
+
+.isMobileViewOffer .discountPrice {
+    font-size: 16px;
+    font-weight: 500;
+    text-align: center;
+    color: #047ff8;
+    margin-bottom: 20px !important;
+}
+
 .discountPrice {
     font-size: 16px;
     font-weight: 500;
@@ -533,7 +549,7 @@ a {
         width: 100% !important;
     }
     .homeTopBannerInnerOne {
-        margin-top: 62px !important;
+        margin-top: 40px !important;
     }
     .dialogCard {
         width: 90% !important;
@@ -547,5 +563,8 @@ a {
     }
     .authDialogLeft {
         display: none !important;
+    }
+    .homeTopBanner {
+        height: 530px !important;
     }
 }
